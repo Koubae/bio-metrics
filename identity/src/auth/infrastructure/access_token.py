@@ -26,7 +26,7 @@ class HashLibPasswordHasher(PasswordHasher):
 class JWTAccessTokenGenerator(AccessTokenGenerator):
     JWT_ALGORITHM: t.ClassVar[str] = "RS256"
 
-    def generate_access_token(self, user_id: int, user_name: str, role: str) -> AccessToken:
+    def generate_access_token(self, user_id: int, username: str, role: str) -> AccessToken:
         settings = Settings.get()
         expires_seconds = (datetime.now(UTC) + timedelta(hours=settings.app_jwt_expiration_hours)).timestamp()
         payload = {
@@ -36,15 +36,15 @@ class JWTAccessTokenGenerator(AccessTokenGenerator):
             "iss": "bio-metrics-identity",
 
             "role": role,
-            "user_name": user_name,
+            "username": username,
         }
         token = jwt.encode(payload, settings.get_cert_private(), algorithm=self.JWT_ALGORITHM)
         access_token = AccessToken(
             user_id=user_id,
-            user_name=user_name,
+            username=username,
             role=role,
             expires=expires_seconds,
-            token=token
+            access_token=token
         )
         return access_token
 
@@ -61,7 +61,7 @@ class JWTAccessTokenGenerator(AccessTokenGenerator):
 
         try:
             user_id: int = payload["sub"]
-            user_name: str = payload["user_name"]
+            username: str = payload["username"]
             role: str = payload["role"]
             expires: int = payload["exp"]
         except KeyError as error:
@@ -71,8 +71,8 @@ class JWTAccessTokenGenerator(AccessTokenGenerator):
 
         return AccessToken(
             user_id=user_id,
-            user_name=user_name,
+            username=username,
             role=role,
             expires=expires,
-            token=access_token
+            access_token=access_token
         )

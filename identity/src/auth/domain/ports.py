@@ -18,7 +18,7 @@ class PasswordHasher(ABC):
 class AccessTokenGenerator(ABC):
     @classmethod
     @abstractmethod
-    def generate_access_token(self, user_id: int, user_name: str, role: str) -> AccessToken:
+    def generate_access_token(self, user_id: int, username: str, role: str) -> AccessToken:
         pass
 
     @classmethod

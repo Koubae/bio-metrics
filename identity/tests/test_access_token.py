@@ -14,15 +14,15 @@ class TestJWTAccessTokenGenerator:
     def test_generate_access_token_creates_valid_token(self):
         generator = JWTAccessTokenGenerator()
 
-        token = generator.generate_access_token(user_id=1, user_name="user", role="admin")
+        token = generator.generate_access_token(user_id=1, username="user", role="admin")
         assert isinstance(token, AccessToken), "Generated token must be of type AccessToken"
 
         expected = (1, "user",  "admin")
-        assert expected == (token.user_id, token.user_name, token.role), "Generated token must have the correct values"
+        assert expected == (token.user_id, token.username, token.role), "Generated token must have the correct values"
 
     def test_generated_token_has_valid_expiration(self):
         generator = JWTAccessTokenGenerator()
-        token = generator.generate_access_token(user_id=1, user_name="user", role="admin")
+        token = generator.generate_access_token(user_id=1, username="user", role="admin")
         now = datetime.now(UTC)
         expiration_time = datetime.fromtimestamp(token.expires, tz=UTC)
         assert expiration_time > now, "Generated token must have a future expiration time"
