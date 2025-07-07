@@ -41,7 +41,19 @@ Run quality checks, formatters and so on:
 make quality-checks
 ```
 
-Check [Makefile](Makefile) in section "Code Quality" for the whole set of commands
+Check [Makefile](Makefile) in the section "Code Quality" for the whole set of commands
+
+### Tests
+
+
+```bash
+# All
+make tests
+# unit
+make unit
+# integration
+make integration
+```
 
 
 Troubleshooting

@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 fastapi = { version = "==0.115.14", extras = ["standard"] }
 uvicorn = "==0.35.0"
-
 python-dotenv = "==1.1.0"
 
 [dev-packages]
@@ -16,6 +15,7 @@ black = "==25.1.0"
 flake8 = "==7.2.0"
 isort = "==6.0.1"
 mypy = "==1.16.0"
+pytest-asyncio = "==1.0.0"
 
 [requires]
 python_version = "3.13"

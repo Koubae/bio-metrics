@@ -46,3 +46,15 @@ mypy:
 
 isort:
 	bash -c "source $$(pipenv --venv)/bin/activate && isort src/"
+
+# =========================
+# 		Tests
+# =========================
+
+tests: unit integration
+
+unit:
+	@. $(VENV)/bin/activate && pytest ./tests/unit
+
+integration:
+	@. $(VENV)/bin/activate && pytest ./tests/integration
