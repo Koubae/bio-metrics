@@ -31,10 +31,7 @@ class Settings:
                 log_format=os.getenv("LOG_FORMAT", "%(asctime)s %(message)s"),
                 app_name=os.getenv("APP_NAME", "Jabba AI-Bot"),
                 app_version=os.getenv("APP_VERSION", "undefined"),
-                app_api_cors_allowed_domains=tuple(
-                    os.environ.get("APP_API_CORS_ALLOWED_DOMAINS", "").split(",")
-                ),
-
+                app_api_cors_allowed_domains=tuple(os.environ.get("APP_API_CORS_ALLOWED_DOMAINS", "").split(",")),
             )
         return cls._singleton
 

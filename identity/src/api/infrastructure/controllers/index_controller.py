@@ -5,12 +5,12 @@ from src.settings import Settings
 
 
 class IndexController:
-    def __init__(self):
+    def __init__(self) -> None:
         self.router: APIRouter = APIRouter()
         self.settings: Settings = Settings.get()
         self._register_routes()
 
-    def _register_routes(self):
+    def _register_routes(self) -> None:
         self.router.add_api_route(path="/", endpoint=self.home, methods=["GET"])
         self.router.add_api_route(path="/ping", endpoint=self.ping, methods=["GET"])
         self.router.add_api_route(path="/alive", endpoint=self.alive, methods=["GET"])

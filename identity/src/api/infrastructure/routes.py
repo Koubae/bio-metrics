@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from src.api.infrastructure.controllers import IndexController
 
+__all__ = ("get_router",)
 
-__all__ = ("get_router", )
 
 def get_router() -> APIRouter:
     router = APIRouter()

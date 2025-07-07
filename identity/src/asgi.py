@@ -4,10 +4,9 @@ from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-
-from src.settings import Settings
-from src.core.setup_logger import setup_logger
 from src.api.infrastructure import routes
+from src.core.setup_logger import setup_logger
+from src.settings import Settings
 
 __all__ = (
     "create_app",
