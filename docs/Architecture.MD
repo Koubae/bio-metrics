@@ -14,8 +14,8 @@ Microservice **will add* complexitly and liability, they are by definition a tec
 
 #### `identity`
 
-![identity](image.png)
+![identity-overview](identity-overview.png)
 
 ####  `bio-samples` 
 
-![bio-samples](image-1.png)
+![bio-sample-overview](bio-sample-overview.png)
