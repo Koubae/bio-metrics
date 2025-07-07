@@ -21,8 +21,13 @@ _for local development_
 QuickStart
 ----------
 
+### Without docker
+
 ```bash
+# Install dependencies
 make init-venv
+# Run the application
+make run
 ```
 
 Development

@@ -1,11 +1,3 @@
-from fastapi import FastAPI
+from src.asgi import create_app
 
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, workers=1)
+app = create_app()

@@ -5,9 +5,8 @@ VENV := .venv
 # ============================
 #       Local Development
 # ============================
-
 run:
-	bash -c "source $$(pipenv --venv)/bin/activate && python src/main.py"
+	. $(VENV)/bin/activate && fastapi dev src/main.py --port=20000
 
 shell:
 	bash -c "source $$(pipenv --venv)/bin/activate && python"
