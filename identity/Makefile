@@ -24,7 +24,7 @@ init-venv: .update-env-file .install-pip-env .install-env .install-deps
 	pipenv install --python=$(which python)
 
 .install-deps:
-	bash -c "source $$(pipenv --venv)/bin/activate && pipenv update"
+	bash -c "source $$(pipenv --venv)/bin/activate && pipenv update --dev"
 
 .update-env-file:
 	@echo 'Updating .env from .env.example 🖋️...'
@@ -37,13 +37,13 @@ init-venv: .update-env-file .install-pip-env .install-env .install-deps
 quality-checks: isort black flake8 mypy
 
 flake8:
-	bash -c "source $$(pipenv --venv)/bin/activate && flake8 --config=.flake8 main.py src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && flake8 --config=.flake8 src/"
 
 black:
-	bash -c "source $$(pipenv --venv)/bin/activate && black --config=pyproject.toml jabba-ai-bot.py src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && black --config=pyproject.toml  src/"
 
 mypy:
-	bash -c "source $$(pipenv --venv)/bin/activate && mypy main.py && mypy src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && mypy src/"
 
 isort:
-	bash -c "source $$(pipenv --venv)/bin/activate && isort main.py src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && isort src/"
