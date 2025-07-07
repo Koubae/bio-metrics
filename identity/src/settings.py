@@ -1,7 +1,9 @@
 import os
 import sys
 import typing as t
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from src.auth.domain.exceptions import AuthCertificateLoadException
 
 
 @dataclass(frozen=True)
@@ -10,9 +12,9 @@ class Settings:
 
     _singleton: t.ClassVar[t.Optional["Settings"]] = None
 
-    ROOT_PATH: t.ClassVar[str] = os.path.dirname(os.path.abspath(sys.argv[0]))
-    CONF_PATH: t.ClassVar[str] = os.path.join(ROOT_PATH, "conf")
-    TESTS_PATH: t.ClassVar[str] = os.path.join(ROOT_PATH, "tests")
+    ROOT_PATH: t.ClassVar[str] = os.path.dirname(os.path.abspath(__file__))
+    CONF_PATH: t.ClassVar[str] = os.path.join(ROOT_PATH, "..", "conf")
+    TESTS_PATH: t.ClassVar[str] = os.path.join(ROOT_PATH, "..", "tests")
 
     # ----------------------------
     #   App
@@ -23,18 +25,69 @@ class Settings:
     app_version: str
     app_api_cors_allowed_domains: tuple[str, ...]
 
+    cert_private_file_name: str | None = field(repr=False)
+    cert_public_file_name: str | None = field(repr=False)
+
+    cert_private: str | None = field(default=None, repr=False)
+    cert_public: str | None = field(default=None, repr=False)
+
     @classmethod
     def get(cls) -> "Settings":
         if cls._singleton is None:
+            cert_private_file_name = os.getenv("APP_CERT_PRIVATE_FILE_NAME", None)
+            cert_public_file_name = os.getenv("APP_CERT_PUBLIC_FILE_NAME", None)
+            cert_private, cert_public = cls._load_certificates(cert_private_file_name, cert_public_file_name)
+
             cls._singleton = cls(
+                cert_private_file_name=cert_private_file_name,
+                cert_public_file_name=cert_public_file_name,
+
+                cert_private=cert_private,
+                cert_public=cert_public,
+
                 log_level=os.getenv("LOG_LEVEL", "DEBUG"),
                 log_format=os.getenv("LOG_FORMAT", "%(asctime)s %(message)s"),
                 app_name=os.getenv("APP_NAME", "Jabba AI-Bot"),
                 app_version=os.getenv("APP_VERSION", "undefined"),
                 app_api_cors_allowed_domains=tuple(os.environ.get("APP_API_CORS_ALLOWED_DOMAINS", "").split(",")),
+
             )
         return cls._singleton
 
     def get_app_info(self) -> str:
         info = f"{self.app_name} V{self.app_version}!"
         return info
+
+    def get_cert_public(self) -> str:
+        return self.cert_public
+
+    def get_cert_private(self) -> str:
+        return self.cert_private
+
+    @classmethod
+    def _load_certificates(cls, cert_private_file_name: str | None, cert_public_file_name: str | None) -> tuple[str | None, str | None]:
+        cert_private: str | None = None
+        cert_public: str | None = None
+
+        cert_private_file_name = cert_private_file_name.strip() if cert_private_file_name else None
+        cert_public_file_name = cert_public_file_name.strip() if cert_public_file_name else None
+
+        if cert_private_file_name:
+            cert_private = cls._load_cert(cert_private_file_name)
+        if cert_public_file_name:
+            cert_public = cls._load_cert(cert_public_file_name)
+        return cert_private, cert_public
+
+    @classmethod
+    def _load_cert(cls, cert_file_name: str) -> str:
+        try:
+            with open(os.path.join(cls.CONF_PATH, cert_file_name), "r") as f:
+                certificate =  f.read()
+        except (FileNotFoundError, PermissionError, UnicodeError) as error:
+            print(f"Error loading certificate file: {error}", file=sys.stderr)
+            raise AuthCertificateLoadException(f"Could not load certificate file {cls}: {error}") from error
+
+        certificate = certificate.strip()
+        if not certificate:
+            raise AuthCertificateLoadException(f"Certificate file {cert_file_name} is empty")
+        return certificate

@@ -1,0 +1,2 @@
+class AuthCertificateLoadException(Exception):
+    pass
