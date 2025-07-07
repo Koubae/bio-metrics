@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.settings import Settings
 from src.core.setup_logger import setup_logger
-
+from src.api.infrastructure import routes
 
 __all__ = (
     "create_app",
@@ -28,9 +28,8 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    @app.get("/")
-    def read_root():
-        return {"Hello": "World"}
+    root_router = routes.get_router()
+    app.include_router(root_router)
     return app
 
 
