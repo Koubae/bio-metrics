@@ -25,6 +25,19 @@ QuickStart
 make init-venv
 ```
 
+Development
+-----------
+
+### Code Quality
+
+Run quality checks, formatters and so on:
+
+```bash
+make quality-checks
+```
+
+Check [Makefile](Makefile) in section "Code Quality" for the whole set of commands
+
 
 Troubleshooting
 ---------------

@@ -7,7 +7,7 @@ VENV := .venv
 # ============================
 
 run:
-	bash -c "source $$(pipenv --venv)/bin/activate && python main.py"
+	bash -c "source $$(pipenv --venv)/bin/activate && python src/main.py"
 
 shell:
 	bash -c "source $$(pipenv --venv)/bin/activate && python"
@@ -30,3 +30,20 @@ init-venv: .update-env-file .install-pip-env .install-env .install-deps
 	@echo 'Updating .env from .env.example 🖋️...'
 	# Updating .env
 	@cp .env.example .env
+
+# =========================
+# 		Code Quality
+# =========================
+quality-checks: isort black flake8 mypy
+
+flake8:
+	bash -c "source $$(pipenv --venv)/bin/activate && flake8 --config=.flake8 main.py src/"
+
+black:
+	bash -c "source $$(pipenv --venv)/bin/activate && black --config=pyproject.toml jabba-ai-bot.py src/"
+
+mypy:
+	bash -c "source $$(pipenv --venv)/bin/activate && mypy main.py && mypy src/"
+
+isort:
+	bash -c "source $$(pipenv --venv)/bin/activate && isort main.py src/"
