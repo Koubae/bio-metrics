@@ -25,6 +25,7 @@ class Settings:
     app_version: str
     app_api_cors_allowed_domains: tuple[str, ...]
 
+    app_jwt_expiration_hours: int
     cert_private_file_name: str | None = field(repr=False)
     cert_public_file_name: str | None = field(repr=False)
 
@@ -37,10 +38,12 @@ class Settings:
             cert_private_file_name = os.getenv("APP_CERT_PRIVATE_FILE_NAME", None)
             cert_public_file_name = os.getenv("APP_CERT_PUBLIC_FILE_NAME", None)
             cert_private, cert_public = cls._load_certificates(cert_private_file_name, cert_public_file_name)
+            app_jwt_expiration_hours = min(int(os.getenv("APP_JWT_EXPIRATION_HOURS", 4)), 1)
 
             cls._singleton = cls(
                 cert_private_file_name=cert_private_file_name,
                 cert_public_file_name=cert_public_file_name,
+                app_jwt_expiration_hours=app_jwt_expiration_hours,
 
                 cert_private=cert_private,
                 cert_public=cert_public,

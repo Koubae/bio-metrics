@@ -30,14 +30,6 @@ class DynamicExtraFormatter(logging.Formatter):
 
             if extra_formatted:
                 message += f"\n{extra_formatted}"
-
-        if hasattr(record, "tls_message"):
-            tls_message = getattr(record, "tls_message")
-            if tls_message:
-                message += f"{YELLOW}\n📡\tTransmission start ...\t📡\n{RESET}"
-                message += f"\t\t{GREEN}>> {tls_message} <<{RESET}"
-                message += f"{YELLOW}\n📡\tTransmission end      \t📡\n{RESET}"
-
         return message
 
 
