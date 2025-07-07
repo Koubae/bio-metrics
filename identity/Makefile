@@ -11,6 +11,11 @@ run:
 shell:
 	bash -c "source $$(pipenv --venv)/bin/activate && python"
 
+
+# Needed if you need to generate NEW RSA certificates for JWT Authorization
+generate_certificates:
+	openssl genrsa -out ./conf/cert_private.pem 2048 && openssl rsa -in ./conf/cert_private.pem -pubout -out ./conf/cert_public.pem
+
 # --------------------------
 # Init
 # --------------------------

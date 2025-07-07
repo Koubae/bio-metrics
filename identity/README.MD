@@ -55,6 +55,11 @@ make unit
 make integration
 ```
 
+### Generates RSA certificates
+
+```bash
+make generate_certificates
+```
 
 Troubleshooting
 ---------------
