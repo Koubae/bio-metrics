@@ -5,6 +5,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
+from src.settings import Settings
+from src.core.setup_logger import setup_logger
+
+
 __all__ = (
     "create_app",
     "setup",
@@ -13,10 +17,12 @@ logger = logging.getLogger(__name__)
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="todo")
+    settings = setup()
+
+    app = FastAPI(title=settings.app_name)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[],
+        allow_origins=settings.app_api_cors_allowed_domains,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -28,7 +34,10 @@ def create_app() -> FastAPI:
     return app
 
 
-def setup() -> None:
+def setup() -> Settings:
     load_dotenv(find_dotenv())
+    settings = Settings.get()
+    setup_logger(settings)
 
-    logger.info(f"Application setup completed\nApplication")
+    logger.info(f"Application setup completed\nApplication: {settings.get_app_info()}")
+    return settings
