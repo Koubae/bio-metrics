@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dataclass(slots=True, kw_only=True)
-class DomainIdBase(ABC):
+class EntityIdBase(ABC):
     id: int | None = field(default=None)
 
     def has_id(self) -> bool:
@@ -15,12 +15,12 @@ class DomainIdBase(ABC):
 
 
 @dataclass(slots=True, kw_only=True)
-class DomainAuditBase(ABC):
+class EntityAuditBase(ABC):
     created: datetime | None = field(default=None)
     updated: datetime | None = field(default=None)
 
 
 @dataclass(slots=True, kw_only=True)
-class DomainTimestampedIdBase(DomainIdBase):
+class EntityTimestampedIdBase(EntityIdBase):
     created: datetime | None = field(default=None)
     updated: datetime | None = field(default=None)

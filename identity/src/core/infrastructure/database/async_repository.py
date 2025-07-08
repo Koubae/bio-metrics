@@ -6,7 +6,7 @@ import sqlalchemy
 from sqlalchemy import ColumnElement, and_, inspect, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.domain.types import Domain, DBPrimaryKey
+from src.core.domain.types import Entity, DBPrimaryKey
 from src.core.domain.ports import AsyncRepository
 from src.core.infrastructure.database.model import Mapper, DbModel
 from src.core.domain.exceptions import (
@@ -15,15 +15,15 @@ from src.core.domain.exceptions import (
 )
 
 
-class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Domain, DbModel]):
-    _domain: type[Domain]
+class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
+    _domain: type[Entity]
     _model: type[DbModel]
     _mapper: type[Mapper]
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def find_by_pk(self, pk: DBPrimaryKey) -> Domain | None:
+    async def find_by_pk(self, pk: DBPrimaryKey) -> Entity | None:
         model = await self._find_by_pk(pk)
         if model is None:
             return None
@@ -40,7 +40,7 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Domain, DbModel]):
             return None
         return row
 
-    async def create(self, domain: Domain) -> None:
+    async def create(self, domain: Entity) -> None:
         model = self._model(**self._mapper.to_dict(domain))
 
         try:
@@ -54,7 +54,7 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Domain, DbModel]):
         if hasattr(domain, "set_id"):
             domain.set_id(model.id)
 
-    async def update(self, domain: Domain) -> bool:
+    async def update(self, domain: Entity) -> bool:
         where = self._pk_where_clause_from_domain(domain)
         stmt = (
             update(self._model)
@@ -76,7 +76,7 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Domain, DbModel]):
     def _pk_columns(self) -> Any:
         return inspect(self._model).primary_key
 
-    def _pk_where_clause_from_domain(self, domain: Domain) -> ColumnElement[bool]:
+    def _pk_where_clause_from_domain(self, domain: Entity) -> ColumnElement[bool]:
         if not is_dataclass(self._domain):
             raise TypeError("domain_obj must be a dataclass instance")
 

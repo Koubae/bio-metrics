@@ -80,7 +80,10 @@ class SQLAlchemyDatabase:
             raise RuntimeError("Database manager not initialized")
         return self._session_factory
 
-    async def get_session(self) -> t.AsyncGenerator[AsyncSession, None]:
+    @asynccontextmanager
+    async def get_session(self) -> AsyncGenerator[AsyncSession | Any, Any]:
+        logger.debug("Creating database session...")
+
         async with self.session_factory() as session:
             try:
                 yield session
@@ -93,19 +96,7 @@ class SQLAlchemyDatabase:
             finally:
                 await session.close()
 
-    @asynccontextmanager
-    async def get_session_context(self) -> AsyncGenerator[AsyncSession | Any, Any]:
-        async with self.session_factory() as session:
-            try:
-                yield session
-            except Exception as e:
-                logger.exception(
-                    f"Database session unhandled exception, rolling back, error: {e}",
-                )
-                await session.rollback()
-                raise
-            finally:
-                await session.close()
+        logger.debug("Database session closed")
 
     async def init_db(self):
         try:

@@ -1,2 +1,2 @@
 # noinspection PyUnresolvedReferences
-from src.account.infrastructure.models import Account
+from src.account.infrastructure.models import AccountModel

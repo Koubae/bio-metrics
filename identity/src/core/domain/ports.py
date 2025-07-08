@@ -1,24 +1,20 @@
 from abc import ABC, abstractmethod
 from typing import Generic
 
-from src.core.domain.types import Domain, Model, DBPrimaryKey
+from src.core.domain.types import Entity, Model, DBPrimaryKey
 
 
-class AsyncRepository(ABC, Generic[Domain, Model]):
+class AsyncRepository(ABC, Generic[Entity, Model]):
     @abstractmethod
-    async def find_by_pk(self, pk: DBPrimaryKey) -> Domain | None:
+    async def find_by_pk(self, pk: DBPrimaryKey) -> Entity | None:
         pass
 
     @abstractmethod
-    async def create(self, domain: Domain) -> None:
+    async def create(self, domain: Entity) -> None:
         pass
 
     @abstractmethod
-    async def update(self, domain: Domain) -> bool:
-        pass
-
-    @abstractmethod
-    async def save(self, domain: Domain) -> Domain:
+    async def update(self, domain: Entity) -> bool:
         pass
 
     @abstractmethod

@@ -1,5 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from dependencies.providers import get_account_repository
+from src.account.domain.ports import AccountRepository
 from src.auth.application.auth_handlers import (
     SignUpRequest,
     LoginRequest,
@@ -21,13 +23,12 @@ class AuthController:
         )
         self.router.add_api_route(path="/login", endpoint=self.login, methods=["POST"])
 
-    async def signup(self, request: SignUpRequest) -> SignUpResponse:
+    async def signup(
+        self,
+        request: SignUpRequest,
+        repository: AccountRepository = Depends(get_account_repository),
+    ) -> SignUpResponse:
         # TODO
-        # async with get_db() as db:
-        #     print("OK")
-        #     print(create_account)
-        # return await create_account(db, payload.username, payload.password, Role(payload.role))
-        # return await create_account(db, payload.username, payload.password, Role(payload.role))
 
         return SignUpResponse(user_id=1, role="admin")
 

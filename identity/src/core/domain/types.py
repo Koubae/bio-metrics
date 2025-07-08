@@ -2,13 +2,13 @@ from typing import TypeAlias, TypeVar, Union
 from uuid import UUID
 
 from src.core.domain.models import (
-    DomainIdBase,
-    DomainAuditBase,
-    DomainTimestampedIdBase,
+    EntityIdBase,
+    EntityAuditBase,
+    EntityTimestampedIdBase,
 )
 
-Domain = TypeVar(
-    "Domain", bound=DomainIdBase | DomainAuditBase | DomainTimestampedIdBase
+Entity = TypeVar(
+    "Entity", bound=EntityIdBase | EntityAuditBase | EntityTimestampedIdBase
 )
 Model = TypeVar("Model")
 DBSimplePrimaryKey: TypeAlias = Union[int, str, UUID]
