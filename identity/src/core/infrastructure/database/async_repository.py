@@ -7,15 +7,15 @@ from sqlalchemy import ColumnElement, and_, inspect, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.domain.types import Entity, DBPrimaryKey
-from src.core.domain.ports import AsyncRepository
-from src.core.infrastructure.database.model import Mapper, DbModel
 from src.core.domain.exceptions import (
     RepositoryCreateException,
-    RepositoryPKMissingException,
     RepositoryDatabaseConnectionError,
     RepositoryDuplicateRowException,
+    RepositoryPKMissingException,
 )
+from src.core.domain.ports import AsyncRepository
+from src.core.domain.types import DBPrimaryKey, Entity
+from src.core.infrastructure.database.model import DbModel, Mapper
 
 
 class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
@@ -49,11 +49,7 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
 
     async def update(self, entity: Entity) -> bool:
         where = self._pk_where_clause_from_entity(entity)
-        stmt = (
-            update(self._model)
-            .where(where)
-            .values(**self._mapper.to_dict_for_update(entity))
-        )
+        stmt = update(self._model).where(where).values(**self._mapper.to_dict_for_update(entity))
         result = await self._session.execute(stmt)
         await self._session.commit()
         return result.rowcount == 1
@@ -83,9 +79,7 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
             return and_(*(c == data[c.key] for c in cols))
         except KeyError as err:
             missing = err.args[0]
-            raise RepositoryPKMissingException(
-                model=self._model, missing=missing
-            ) from None
+            raise RepositoryPKMissingException(model=self._model, missing=missing) from None
 
     async def _create(self, entity, model) -> None:
         try:
@@ -100,13 +94,9 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
                     error=f"Duplicate record: {repr(error)}",
                 ) from error
 
-            raise RepositoryCreateException(
-                model=self._model, entity=entity, error=repr(error)
-            ) from error
+            raise RepositoryCreateException(model=self._model, entity=entity, error=repr(error)) from error
         except sqlalchemy.exc.DatabaseError as error:
-            raise RepositoryDatabaseConnectionError(
-                model=self._model, entity=entity, error=repr(error)
-            ) from error
+            raise RepositoryDatabaseConnectionError(model=self._model, entity=entity, error=repr(error)) from error
 
         if hasattr(entity, "set_id"):
             entity.set_id(model.id)
@@ -114,7 +104,4 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
     @staticmethod
     def _is_duplicate_exception(error: IntegrityError) -> bool:
         error_msg = str(error.orig).lower()
-        return any(
-            keyword in error_msg
-            for keyword in ["unique", "duplicate", "already exists"]
-        )
+        return any(keyword in error_msg for keyword in ["unique", "duplicate", "already exists"])

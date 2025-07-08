@@ -62,7 +62,6 @@ class Settings:
                 app_name=os.getenv("APP_NAME", "Jabba AI-Bot"),
                 app_version=os.getenv("APP_VERSION", "undefined"),
                 app_api_cors_allowed_domains=tuple(os.environ.get("APP_API_CORS_ALLOWED_DOMAINS", "").split(",")),
-
                 db_name=os.getenv("DB_NAME", None),
                 db_host=os.getenv("DB_HOST", "localhost"),
                 db_port=int(os.getenv("DB_PORT", 5432)),
@@ -73,12 +72,10 @@ class Settings:
                 db_pool_recycle=int(os.getenv("DB_POOL_RECYCLE", -1)),
                 db_pool_pre_ping=cls.parse_bool_env("DB_POOL_PRE_PING", True),
                 db_echo=cls.parse_bool_env("DB_ECHO", False),
-
                 cert_private_file_name=cert_private_file_name,
                 cert_public_file_name=cert_public_file_name,
                 cert_private=cert_private,
                 cert_public=cert_public,
-
             )
         return cls._singleton
 
@@ -97,8 +94,9 @@ class Settings:
         return os.getenv(env_name, str(default)).lower() in ("true", "1")
 
     @classmethod
-    def _load_certificates(cls, cert_private_file_name: str | None, cert_public_file_name: str | None) -> tuple[
-        str | None, str | None]:
+    def _load_certificates(
+        cls, cert_private_file_name: str | None, cert_public_file_name: str | None
+    ) -> tuple[str | None, str | None]:
         cert_private: str | None = None
         cert_public: str | None = None
 

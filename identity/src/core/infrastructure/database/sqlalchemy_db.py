@@ -1,11 +1,11 @@
-import typing as t
 import logging
+import typing as t
 from contextlib import asynccontextmanager
 from typing import Any, AsyncGenerator
 
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import AsyncAdaptedQueuePool
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
 from src.core.infrastructure.database.model import Base
 from src.settings import Settings
@@ -14,9 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class SQLAlchemyDatabase:
-    DB_URI: t.ClassVar[str] = (
-        "postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
-    )
+    DB_URI: t.ClassVar[str] = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{database}"
     _singleton: t.ClassVar[t.Optional["SQLAlchemyDatabase"]] = None
 
     def __init__(

@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends
 
 from dependencies.providers import provide_account_service
 from src.account.application.account_handlers import (
-    GetAccountRequest,
     GetAccountHandler,
+    GetAccountRequest,
     ListAccountHandler,
-    UpdateRoleRequest,
     UpdateRoleHandler,
+    UpdateRoleRequest,
 )
 from src.account.application.account_service import AccountService
 from src.account.domain.entities import Account
@@ -26,20 +26,14 @@ class AccountController:
         self._register_routes()
 
     def _register_routes(self) -> None:
-        self.router.add_api_route(
-            path="/{username}", endpoint=self.get, methods=["GET"]
-        )
+        self.router.add_api_route(path="/{username}", endpoint=self.get, methods=["GET"])
         self.router.add_api_route(path="/", endpoint=self.list, methods=["GET"])
-        self.router.add_api_route(
-            path="/update-role", endpoint=self.update_role, methods=["PATCH"]
-        )
+        self.router.add_api_route(path="/update-role", endpoint=self.update_role, methods=["PATCH"])
 
     @staticmethod
     async def get(
         username: str,
-        access_token: AccessToken = Depends(
-            restrict((Role.ADMIN, Role.LAB_SCIENTIST, Role.DOCTOR, Role.USER))
-        ),
+        access_token: AccessToken = Depends(restrict((Role.ADMIN, Role.LAB_SCIENTIST, Role.DOCTOR, Role.USER))),
         service: AccountService = Depends(provide_account_service),
     ) -> Account:
         request = GetAccountRequest(username=username, access_token=access_token)
@@ -53,9 +47,7 @@ class AccountController:
         pagination: PaginationParams = Depends(get_pagination_params),
         service: AccountService = Depends(provide_account_service),
     ) -> list[Account]:
-        handler = ListAccountHandler(
-            limit=pagination.limit, offset=pagination.offset, account_service=service
-        )
+        handler = ListAccountHandler(limit=pagination.limit, offset=pagination.offset, account_service=service)
         response = await handler.handle()
         return response
 

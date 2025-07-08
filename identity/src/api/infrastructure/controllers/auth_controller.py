@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends
 from dependencies.providers import provide_account_service, provide_auth_service
 from src.account.application.account_service import AccountService
 from src.auth.application.auth_handlers import (
-    SignUpRequest,
+    LoginHandler,
     LoginRequest,
     LoginResponse,
-    SignUpResponse,
     SignUpHandler,
-    LoginHandler,
+    SignUpRequest,
+    SignUpResponse,
 )
 from src.auth.application.auth_service import AuthService
 from src.settings import Settings
@@ -21,9 +21,7 @@ class AuthController:
         self._register_routes()
 
     def _register_routes(self) -> None:
-        self.router.add_api_route(
-            path="/signup", endpoint=self.signup, methods=["POST"]
-        )
+        self.router.add_api_route(path="/signup", endpoint=self.signup, methods=["POST"])
         self.router.add_api_route(path="/login", endpoint=self.login, methods=["POST"])
 
     @staticmethod
