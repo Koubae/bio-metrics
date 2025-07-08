@@ -2,7 +2,7 @@ from sqlalchemy import Column, String
 from sqlalchemy import Enum
 
 from src.auth.domain.entities import Role
-from src.account.domain.entities import Account
+from src.account.domain.entities import Account, AccountWithPassword
 from src.core.infrastructure.database.model import TimestampedIdModel, Mapper
 
 
@@ -18,6 +18,15 @@ class AccountMapper(Mapper[Account, AccountModel]):  # pragma: no cover
     @classmethod
     def to_entity(cls, model: AccountModel) -> Account:
         return Account(id=model.id, username=model.username, role=Role(model.role))
+
+    @classmethod
+    def to_entity_with_secret(cls, model: AccountModel) -> AccountWithPassword:
+        return AccountWithPassword(
+            id=model.id,
+            username=model.username,
+            role=Role(model.role),
+            password=model.password,
+        )
 
     @classmethod
     def to_model(cls, entity: Account) -> AccountModel:

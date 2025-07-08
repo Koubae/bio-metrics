@@ -27,7 +27,10 @@ class RepositoryCreateException(RepositoryException):
         error: str,
         message: str | None = None,
     ) -> None:
-        message = message or f"Error while inserting {model} with values {entity}"
+        message = (
+            message
+            or f"Error while inserting {model} with values {entity}, error: {error}"
+        )
         super().__init__(message)
 
 
@@ -46,3 +49,8 @@ class RepositoryPKMissingException(RepositoryException):
         super().__init__(
             f"Missing primary-key column for model {model}, missing: '{missing}'"
         )
+
+
+class RepositoryEntityNotFound(RepositoryException):
+    def __init__(self, model: type[DbModel], values: t.Any) -> None:
+        super().__init__(f"Entity {model} not found, values {values}")

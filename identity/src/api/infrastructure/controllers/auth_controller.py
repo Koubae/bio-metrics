@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from dependencies.providers import get_account_service
+from dependencies.providers import provide_account_service, provide_auth_service
 from src.account.application.account_service import AccountService
 from src.auth.application.auth_handlers import (
     SignUpRequest,
@@ -8,7 +8,9 @@ from src.auth.application.auth_handlers import (
     LoginResponse,
     SignUpResponse,
     SignUpHandler,
+    LoginHandler,
 )
+from src.auth.application.auth_service import AuthService
 from src.settings import Settings
 
 
@@ -27,12 +29,17 @@ class AuthController:
     @staticmethod
     async def signup(
         request: SignUpRequest,
-        service: AccountService = Depends(get_account_service),
+        service: AccountService = Depends(provide_account_service),
     ) -> SignUpResponse:
         handler = SignUpHandler(request, service)
         response = await handler.handle()
         return response
 
-    async def login(self, request: LoginRequest) -> LoginResponse:
-        # TODO
-        return LoginResponse(access_token="token", expires=1.0)
+    @staticmethod
+    async def login(
+        request: LoginRequest,
+        service: AuthService = Depends(provide_auth_service),
+    ) -> LoginResponse:
+        handler = LoginHandler(request, service)
+        response = await handler.handle()
+        return response
