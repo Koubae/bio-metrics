@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends
 
-from dependencies.providers import get_account_repository
-from src.account.domain.ports import AccountRepository
+from dependencies.providers import get_account_service
+from src.account.application.account_service import AccountService
 from src.auth.application.auth_handlers import (
     SignUpRequest,
     LoginRequest,
     LoginResponse,
     SignUpResponse,
+    SignUpHandler,
 )
 from src.settings import Settings
 
@@ -26,11 +27,13 @@ class AuthController:
     async def signup(
         self,
         request: SignUpRequest,
-        repository: AccountRepository = Depends(get_account_repository),
+        service: AccountService = Depends(get_account_service),
     ) -> SignUpResponse:
-        # TODO
+        # TODO add erro handling
+        handler = SignUpHandler(request, service)
 
-        return SignUpResponse(user_id=1, role="admin")
+        response = await handler.handle()
+        return response
 
     async def login(self, request: LoginRequest) -> LoginResponse:
         # TODO

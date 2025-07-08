@@ -16,7 +16,7 @@ class AccountModel(TimestampedIdModel):
 
 class AccountMapper(Mapper[Account, AccountModel]):  # pragma: no cover
     @classmethod
-    def to_domain(cls, model: AccountModel) -> Account:
+    def to_entity(cls, model: AccountModel) -> Account:
         return Account(id=model.id, username=model.username, role=Role(model.role))
 
     @classmethod

@@ -7,9 +7,9 @@ class RepositoryException(Exception):
 
 
 class RepositoryCreateException(RepositoryException):
-    def __init__(self, model: type[DbModel], domain: Entity, error: str) -> None:
+    def __init__(self, model: type[DbModel], entity: Entity, error: str) -> None:
         super().__init__(
-            f"Error while inserting {model} with values {domain}, error: {error}"
+            f"Error while inserting {model} with values {entity}, error: {error}"
         )
 
 

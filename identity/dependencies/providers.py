@@ -3,7 +3,9 @@ from typing import Any, AsyncGenerator
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.account.infrastructure.account_repository import AccountRepository
+from src.account.application.account_service import AccountService
+from src.account.infrastructure.account_repository import AccountRepositoryAdapter
+from src.auth.infrastructure.access_token import HashLibPasswordHasher
 from src.core.infrastructure.database.sqlalchemy_db import SQLAlchemyDatabase
 
 
@@ -21,6 +23,19 @@ async def get_session(
 
 async def get_account_repository(
     session: AsyncSession = Depends(get_session),
-) -> AccountRepository:
-    repository = AccountRepository(session)
+) -> AccountRepositoryAdapter:
+    repository = AccountRepositoryAdapter(session)
     return repository
+
+
+async def provide_password_hasher() -> HashLibPasswordHasher:
+    hasher = HashLibPasswordHasher()
+    return hasher
+
+
+async def get_account_service(
+    repository: AccountRepositoryAdapter = Depends(get_account_repository),
+    password_hasher: HashLibPasswordHasher = Depends(provide_password_hasher),
+) -> AccountService:
+    service = AccountService(repository, password_hasher)
+    return service

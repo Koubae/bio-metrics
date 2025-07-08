@@ -16,7 +16,7 @@ from src.core.domain.exceptions import (
 
 
 class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
-    _domain: type[Entity]
+    _entity: type[Entity]
     _model: type[DbModel]
     _mapper: type[Mapper]
 
@@ -27,7 +27,7 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
         model = await self._find_by_pk(pk)
         if model is None:
             return None
-        return self._mapper.to_domain(model)
+        return self._mapper.to_entity(model)
 
     async def _find_by_pk(self, pk: DBPrimaryKey) -> DbModel | None:
         if isinstance(pk, (str, int)):
@@ -40,28 +40,19 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
             return None
         return row
 
-    async def create(self, domain: Entity) -> None:
-        model = self._model(**self._mapper.to_dict(domain))
+    async def create(self, entity: Entity) -> None:
+        model = self._model(**self._mapper.to_dict(entity))
+        await self._create(entity, model)
 
-        try:
-            self._session.add(model)
-            await self._session.flush()
-        except sqlalchemy.exc.IntegrityError as error:
-            raise RepositoryCreateException(
-                model=self._model, domain=domain, error=repr(error)
-            ) from error
-
-        if hasattr(domain, "set_id"):
-            domain.set_id(model.id)
-
-    async def update(self, domain: Entity) -> bool:
-        where = self._pk_where_clause_from_domain(domain)
+    async def update(self, entity: Entity) -> bool:
+        where = self._pk_where_clause_from_entity(entity)
         stmt = (
             update(self._model)
             .where(where)
-            .values(**self._mapper.to_dict_for_update(domain))
+            .values(**self._mapper.to_dict_for_update(entity))
         )
         result = await self._session.execute(stmt)
+        await self._session.commit()
         return result.rowcount == 1
 
     async def delete_by_pk(self, pk: DBPrimaryKey) -> bool:
@@ -76,11 +67,11 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
     def _pk_columns(self) -> Any:
         return inspect(self._model).primary_key
 
-    def _pk_where_clause_from_domain(self, domain: Entity) -> ColumnElement[bool]:
-        if not is_dataclass(self._domain):
-            raise TypeError("domain_obj must be a dataclass instance")
+    def _pk_where_clause_from_entity(self, entity: Entity) -> ColumnElement[bool]:
+        if not is_dataclass(self._entity):
+            raise TypeError("entity_obj must be a dataclass instance")
 
-        data = self._mapper.to_dict(domain)
+        data = self._mapper.to_dict(entity)
         return self._pk_where_clause_from_dict(data)
 
     def _pk_where_clause_from_dict(self, data: dict) -> ColumnElement[bool]:
@@ -92,3 +83,16 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
             raise RepositoryPKMissingException(
                 model=self._model, missing=missing
             ) from None
+
+    async def _create(self, entity, model) -> None:
+        try:
+            self._session.add(model)
+            await self._session.commit()
+            await self._session.refresh(model)
+        except sqlalchemy.exc.IntegrityError as error:
+            raise RepositoryCreateException(
+                model=self._model, entity=entity, error=repr(error)
+            ) from error
+
+        if hasattr(entity, "set_id"):
+            entity.set_id(model.id)

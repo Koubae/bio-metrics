@@ -50,7 +50,7 @@ class Mapper(ABC, Generic[Entity, DbModel]):
 
     @classmethod
     @abstractmethod
-    def to_domain(cls, model: DbModel) -> Entity:
+    def to_entity(cls, model: DbModel) -> Entity:
         pass
 
     @classmethod
