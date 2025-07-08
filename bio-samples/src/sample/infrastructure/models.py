@@ -14,7 +14,9 @@ class SampleModel(TimestampedIdModel):
         default=SampleType.UNKNOWN,
     )
     status = Column(
-        Enum(Status, name="sample_type_enum"), nullable=False, default=Status.SUBMITTED
+        Enum(Status, name="sample_status_enum"),
+        nullable=False,
+        default=Status.SUBMITTED,
     )
     storage_location = Column(String(255), nullable=False)
 

@@ -13,8 +13,16 @@ class SampleRepositoryAdapter(
     _model: type[SampleModel] = SampleModel
     _mapper: type[SampleMapper] = SampleMapper
 
-    async def list_samples_by_subject_id(self, limit: int, offset: int) -> list[Sample]:
-        stmt = select(SampleModel).order_by(SampleModel.id).limit(limit).offset(offset)
+    async def list_samples_by_subject_id(
+        self, subject_id: int, limit: int, offset: int
+    ) -> list[Sample]:
+        stmt = (
+            select(SampleModel)
+            .where(SampleModel.subject_id == subject_id)
+            .order_by(SampleModel.id)
+            .limit(limit)
+            .offset(offset)
+        )
         result = await self._session.execute(stmt)
         rows = result.scalars().all()
         accounts = [self._mapper.to_entity(row) for row in rows]
