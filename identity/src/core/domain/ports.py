@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic
 
-from src.core.domain.types import Entity, Model, DBPrimaryKey
+from src.core.domain.types import DBPrimaryKey, Entity, Model
 
 
 class AsyncRepository(ABC, Generic[Entity, Model]):

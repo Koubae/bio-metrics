@@ -1,13 +1,13 @@
 import hashlib
 import logging
 import typing as t
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
 
 import jwt
 
 from src.auth.domain.entities import AccessToken, Role
-from src.auth.domain.exceptions import AuthAccessTokenInvalid, AuthAccessTokenExpired
-from src.auth.domain.ports import PasswordHasher, AccessTokenGenerator
+from src.auth.domain.exceptions import AuthAccessTokenExpired, AuthAccessTokenInvalid
+from src.auth.domain.ports import AccessTokenGenerator, PasswordHasher
 from src.settings import Settings
 
 logger = logging.getLogger(__name__)
@@ -26,13 +26,9 @@ class HashLibPasswordHasher(PasswordHasher):
 class JWTAccessTokenAuth(AccessTokenGenerator):
     JWT_ALGORITHM: t.ClassVar[str] = "RS256"
 
-    def generate_access_token(
-        self, user_id: int, username: str, role: Role
-    ) -> AccessToken:
+    def generate_access_token(self, user_id: int, username: str, role: Role) -> AccessToken:
         settings = Settings.get()
-        expires_seconds = (
-            datetime.now(UTC) + timedelta(hours=settings.app_jwt_expiration_hours)
-        ).timestamp()
+        expires_seconds = (datetime.now(UTC) + timedelta(hours=settings.app_jwt_expiration_hours)).timestamp()
         payload = {
             "sub": str(user_id),
             "exp": expires_seconds,
@@ -41,9 +37,7 @@ class JWTAccessTokenAuth(AccessTokenGenerator):
             "role": str(role),
             "username": username,
         }
-        token = jwt.encode(
-            payload, settings.get_cert_private(), algorithm=self.JWT_ALGORITHM
-        )
+        token = jwt.encode(payload, settings.get_cert_private(), algorithm=self.JWT_ALGORITHM)
         access_token = AccessToken(
             user_id=user_id,
             username=username,

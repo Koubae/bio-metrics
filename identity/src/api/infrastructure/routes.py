@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from src.api.infrastructure.controllers import IndexController, AuthController
+from src.api.infrastructure.controllers import AuthController, IndexController
 
 __all__ = ("get_router",)
 
@@ -19,9 +19,7 @@ def get_router() -> APIRouter:
     api_v1.include_router(auth_controller.router, prefix="/auth", tags=["Auth"])
 
     account_controller = AccountController()
-    api_v1.include_router(
-        account_controller.router, prefix="/accounts", tags=["Account"]
-    )
+    api_v1.include_router(account_controller.router, prefix="/accounts", tags=["Account"])
 
     router.include_router(api_v1)
     return router

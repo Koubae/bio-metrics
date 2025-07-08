@@ -1,9 +1,8 @@
-from sqlalchemy import Column, String
-from sqlalchemy import Enum
+from sqlalchemy import Column, Enum, String
 
-from src.auth.domain.entities import Role
 from src.account.domain.entities import Account, AccountWithPassword
-from src.core.infrastructure.database.model import TimestampedIdModel, Mapper
+from src.auth.domain.entities import Role
+from src.core.infrastructure.database.model import Mapper, TimestampedIdModel
 
 
 class AccountModel(TimestampedIdModel):
@@ -36,6 +35,4 @@ class AccountMapper(Mapper[Account, AccountModel]):  # pragma: no cover
 
     @classmethod
     def to_model(cls, entity: Account) -> AccountModel:
-        return AccountModel(
-            id=entity.id, username=entity.username, role=Role(entity.role)
-        )
+        return AccountModel(id=entity.id, username=entity.username, role=Role(entity.role))

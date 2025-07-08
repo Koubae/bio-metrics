@@ -6,13 +6,13 @@ from pydantic import BaseModel, Field
 from src.account.application.account_service import AccountService
 from src.account.domain.entities import Account
 from src.auth.application.auth_service import AuthService
-from src.auth.domain.entities import Role, AccessToken
+from src.auth.domain.entities import AccessToken, Role
 from src.auth.domain.exceptions import AuthPasswordInvalid
 from src.core.domain.exceptions import (
-    RepositoryDuplicateRowException,
+    UNEXPECTED_ERROR_MESSAGE,
     RepositoryCreateException,
     RepositoryDatabaseConnectionError,
-    UNEXPECTED_ERROR_MESSAGE,
+    RepositoryDuplicateRowException,
     RepositoryEntityNotFound,
 )
 
@@ -56,13 +56,9 @@ class SignUpHandler:
                 f"Signup failed, Unexpected exception, account {self.request.username} : {repr(error)}",
                 extra={"extra": {"username": self.request.username}},
             )
-            raise HTTPException(
-                status_code=500, detail={"error": UNEXPECTED_ERROR_MESSAGE}
-            )
+            raise HTTPException(status_code=500, detail={"error": UNEXPECTED_ERROR_MESSAGE})
 
-        return SignUpResponse(
-            id=account.id, username=account.username, role=account.role
-        )
+        return SignUpResponse(id=account.id, username=account.username, role=account.role)
 
 
 class LoginRequest(BaseModel):
@@ -83,9 +79,7 @@ class LoginHandler:
 
     async def handle(self) -> LoginResponse:
         try:
-            access_token: AccessToken = await self.auth_service.login(
-                self.request.username, self.request.password
-            )
+            access_token: AccessToken = await self.auth_service.login(self.request.username, self.request.password)
         except RepositoryEntityNotFound as error:
             logger.info(
                 f"Login failed, Account {self.request.username} not found: {repr(error)}",
@@ -110,9 +104,7 @@ class LoginHandler:
                 f"Login failed, Unexpected exception {self.request.username} : {repr(error)}",
                 extra={"extra": {"username": self.request.username}},
             )
-            raise HTTPException(
-                status_code=500, detail={"error": UNEXPECTED_ERROR_MESSAGE}
-            )
+            raise HTTPException(status_code=500, detail={"error": UNEXPECTED_ERROR_MESSAGE})
 
         return LoginResponse(
             access_token=access_token.access_token,

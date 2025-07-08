@@ -1,2 +1,3 @@
 
+CREATE DATABASE bio_samples;
 CREATE DATABASE identity;

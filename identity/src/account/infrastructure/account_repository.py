@@ -2,14 +2,12 @@ from sqlalchemy import select
 
 from src.account.domain.entities import Account, AccountWithPassword
 from src.account.domain.ports import AccountRepository
-from src.account.infrastructure.models import AccountModel, AccountMapper
+from src.account.infrastructure.models import AccountMapper, AccountModel
 from src.core.domain.exceptions import RepositoryEntityNotFound
 from src.core.infrastructure.database.async_repository import AsyncSqlalchemyRepository
 
 
-class AccountRepositoryAdapter(
-    AsyncSqlalchemyRepository[Account, AccountModel], AccountRepository
-):
+class AccountRepositoryAdapter(AsyncSqlalchemyRepository[Account, AccountModel], AccountRepository):
     _entity: type[Account] = Account
     _model: type[AccountModel] = AccountModel
     _mapper: type[AccountMapper] = AccountMapper
@@ -38,9 +36,7 @@ class AccountRepositoryAdapter(
             raise RepositoryEntityNotFound(model=self._model, values=(username,))
         return entity
 
-    async def find_by_username_for_login(
-        self, username: str
-    ) -> AccountWithPassword | None:
+    async def find_by_username_for_login(self, username: str) -> AccountWithPassword | None:
         """
         Raises
             - RepositoryEntityNotFound: if the entity was not found
@@ -54,9 +50,7 @@ class AccountRepositoryAdapter(
         return self._mapper.to_entity_with_secret(model)
 
     async def list_accounts(self, limit: int, offset: int) -> list[Account]:
-        stmt = (
-            select(AccountModel).order_by(AccountModel.id).limit(limit).offset(offset)
-        )
+        stmt = select(AccountModel).order_by(AccountModel.id).limit(limit).offset(offset)
         result = await self._session.execute(stmt)
         rows = result.scalars().all()
         accounts = [self._mapper.to_entity(row) for row in rows]

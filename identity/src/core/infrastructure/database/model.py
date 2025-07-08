@@ -1,5 +1,5 @@
-from dataclasses import asdict
 from abc import ABC, abstractmethod
+from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import ClassVar, Generic, TypeVar
 
@@ -64,6 +64,4 @@ class Mapper(ABC, Generic[Entity, DbModel]):
     @classmethod
     def to_dict_for_update(cls, domain: Entity) -> dict:
         values = cls.to_dict(domain)
-        return {
-            k: v for k, v in values.items() if k not in cls._remove_values_for_update
-        }
+        return {k: v for k, v in values.items() if k not in cls._remove_values_for_update}

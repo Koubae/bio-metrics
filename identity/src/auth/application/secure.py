@@ -1,11 +1,10 @@
-from fastapi import HTTPException, Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
-from src.auth.domain.entities import Role, AccessToken
-from src.auth.domain.exceptions import AuthAccessTokenInvalid, AuthAccessTokenExpired
-from src.auth.infrastructure.access_token import JWTAccessTokenAuth
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from dependencies.providers import provide_access_token_generator
+from src.auth.domain.entities import AccessToken, Role
+from src.auth.domain.exceptions import AuthAccessTokenExpired, AuthAccessTokenInvalid
+from src.auth.infrastructure.access_token import JWTAccessTokenAuth
 
 security = HTTPBearer()
 

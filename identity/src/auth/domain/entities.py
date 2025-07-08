@@ -1,5 +1,5 @@
-from enum import StrEnum
 from dataclasses import dataclass, field
+from enum import StrEnum
 
 
 class Role(StrEnum):

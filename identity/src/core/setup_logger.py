@@ -70,9 +70,7 @@ def setup_logger(settings: Settings) -> None:
         level=level,
     )
 
-    _formatter = DynamicExtraFormatter(
-        fmt=settings.log_format, datefmt="%Y-%m-%d %H:%M:%S"
-    )
+    _formatter = DynamicExtraFormatter(fmt=settings.log_format, datefmt="%Y-%m-%d %H:%M:%S")
     for handler in logging.getLogger().handlers:
         handler.setFormatter(_formatter)
 

@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 from src.account.application.account_service import AccountService
 from src.account.domain.entities import Account
-from src.auth.domain.entities import Role, AccessToken
+from src.auth.domain.entities import AccessToken, Role
 from src.core.domain.exceptions import RepositoryEntityNotFound
 
 logger = logging.getLogger(__name__)
