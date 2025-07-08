@@ -1,4 +1,63 @@
 services:
+  identity:
+    container_name: bio-metrics-identity
+    image: bio-metrics/identity
+    build:
+      context: ./identity
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "20000:8000"
+    depends_on:
+      - db
+    networks:
+      - bio_metrics_network
+    environment:
+      - DB_HOST=db
+    env_file:
+      - path: ./identity/.env
+        required: true
+    volumes:
+      - ./identity/conf:/app/conf
+      - ./identity/dependencies:/app/dependencies
+      - ./identity/src:/app/src
+    command: [ "uvicorn", "src.main:app", "--host=0.0.0.0", "--port=8000", "--reload" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  bio-samples:
+    container_name: bio-metrics-bio-samples
+    image: bio-metrics/bio-samples
+    build:
+      context: ./bio-samples
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "20001:8000"
+    depends_on:
+      - db
+    networks:
+      - bio_metrics_network
+    environment:
+      - DB_HOST=db
+    env_file:
+      - path: ./bio-samples/.env
+        required: true
+    volumes:
+      - ./bio-samples/conf:/app/conf
+      - ./bio-samples/dependencies:/app/dependencies
+      - ./bio-samples/src:/app/src
+    command: [ "uvicorn", "src.main:app", "--host=0.0.0.0", "--port=8000", "--reload" ]
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
   db:
     image: postgres:15-alpine
     container_name: bio-metrics-db

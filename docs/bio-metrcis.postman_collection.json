@@ -1,0 +1,363 @@
+{
+	"info": {
+		"_postman_id": "3cc51186-1d62-4261-bcf0-df38255a6beb",
+		"name": "bio-metrcis",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12556739",
+		"_collection_link": "https://federico-2339.postman.co/workspace/workspace_2~1c63b69a-8d24-426b-a534-8af6f5ffa2e6/collection/12556739-3cc51186-1d62-4261-bcf0-df38255a6beb?action=share&source=collection_link&creator=12556739"
+	},
+	"item": [
+		{
+			"name": "identity",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "SignUp",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"user1\",\r\n    \"password\": \"pass\",\r\n    \"role\": \"doctor\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{identity}}/api/v1/auth/signup",
+									"host": [
+										"{{identity}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SignUp Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"pass\",\r\n    \"role\": \"admin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{identity}}/api/v1/auth/signup",
+									"host": [
+										"{{identity}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const responseJson = pm.response.json();\r",
+											"\r",
+											"var access_token = responseJson.access_token;\r",
+											"pm.environment.set(\"access_token\", access_token)"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"pass\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{identity}}/api/v1/auth/login",
+									"host": [
+										"{{identity}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Account",
+					"item": [
+						{
+							"name": "Get Account",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{identity}}/api/v1/accounts/user2",
+									"host": [
+										"{{identity}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts",
+										"user2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Accounts",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{identity}}/api/v1/accounts",
+									"host": [
+										"{{identity}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Role",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"admin\",\r\n    \"role\":\"admin\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{identity}}/api/v1/accounts/update-role",
+									"host": [
+										"{{identity}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"accounts",
+										"update-role"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "bio-samples",
+			"item": [
+				{
+					"name": "Samples",
+					"item": [
+						{
+							"name": "Create Samle",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subject_id\": 3,\r\n    \"sample_type\":\"blood\",\r\n    \"status\": \"submitted\",\r\n    \"storage_location\": \"fridge-lab-001\",\r\n    \"sample_metadata\": {\"results\": \"some results\", \"values\": \"some blood values\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bio-samples}}/api/v1/samples/",
+									"host": [
+										"{{bio-samples}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"samples",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Sample",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{bio-samples}}/api/v1/samples/1",
+									"host": [
+										"{{bio-samples}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"samples",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Sample",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subject_id\": 3,\r\n    \"sample_type\":\"blood\",\r\n    \"status\": \"submitted\",\r\n    \"storage_location\": \"fridge-lab-001\",\r\n    \"sample_metadata\": {\"results\": \"some results\", \"values\": \"some blood values\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bio-samples}}/api/v1/samples/3",
+									"host": [
+										"{{bio-samples}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"samples",
+										"3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Patient Samples",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"subject_id\": 3,\r\n    \"sample_type\":\"blood\",\r\n    \"status\": \"submitted\",\r\n    \"storage_location\": \"fridge-lab-001\",\r\n    \"sample_metadata\": {\"results\": \"some results\", \"values\": \"some blood values\"\r\n    }\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{bio-samples}}/api/v1/samples?subject_id=3",
+									"host": [
+										"{{bio-samples}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"samples"
+									],
+									"query": [
+										{
+											"key": "subject_id",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,8 +1,15 @@
-
 # ============================
 #       Docker
 # ============================
+up:
+	@docker compose up
 
+down:
+	@docker compose down
+
+build:
+	@echo 'Building images ...🛠️'
+	@docker compose build
 
 # ////////////////////
 #		DB -- PostGRESQL

@@ -49,7 +49,7 @@ def create_app() -> FastAPI:
 
 
 def setup() -> Settings:
-    load_dotenv(find_dotenv())
+    load_dotenv(find_dotenv(), override=False)
     settings = Settings.get()
     setup_logger(settings)
 
