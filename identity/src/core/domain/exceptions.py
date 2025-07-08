@@ -6,10 +6,32 @@ class RepositoryException(Exception):
     pass
 
 
-class RepositoryCreateException(RepositoryException):
+class RepositoryDatabaseConnectionError(RepositoryException):
     def __init__(self, model: type[DbModel], entity: Entity, error: str) -> None:
         super().__init__(
-            f"Error while inserting {model} with values {entity}, error: {error}"
+            f"Database connection Error {model} with values {entity}, error: {error}"
+        )
+
+
+class RepositoryCreateException(RepositoryException):
+    def __init__(
+        self,
+        model: type[DbModel],
+        entity: Entity,
+        error: str,
+        message: str | None = None,
+    ) -> None:
+        message = message or f"Error while inserting {model} with values {entity}"
+        super().__init__(message)
+
+
+class RepositoryDuplicateRowException(RepositoryCreateException):
+    def __init__(self, model: type[DbModel], entity: Entity, error: str) -> None:
+        super().__init__(
+            model,
+            entity,
+            error,
+            f"RepositoryDuplicateRowException for {model} with values {entity}",
         )
 
 

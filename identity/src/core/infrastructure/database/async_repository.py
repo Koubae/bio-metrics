@@ -4,6 +4,7 @@ from typing import Any, Generic
 
 import sqlalchemy
 from sqlalchemy import ColumnElement, and_, inspect, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.domain.types import Entity, DBPrimaryKey
@@ -12,6 +13,8 @@ from src.core.infrastructure.database.model import Mapper, DbModel
 from src.core.domain.exceptions import (
     RepositoryCreateException,
     RepositoryPKMissingException,
+    RepositoryDatabaseConnectionError,
+    RepositoryDuplicateRowException,
 )
 
 
@@ -89,10 +92,29 @@ class AsyncSqlalchemyRepository(AsyncRepository, ABC, Generic[Entity, DbModel]):
             self._session.add(model)
             await self._session.commit()
             await self._session.refresh(model)
-        except sqlalchemy.exc.IntegrityError as error:
+        except IntegrityError as error:
+            if self._is_duplicate_exception(error):
+                raise RepositoryDuplicateRowException(
+                    model=self._model,
+                    entity=entity,
+                    error=f"Duplicate record: {repr(error)}",
+                ) from error
+
             raise RepositoryCreateException(
+                model=self._model, entity=entity, error=repr(error)
+            ) from error
+        except sqlalchemy.exc.DatabaseError as error:
+            raise RepositoryDatabaseConnectionError(
                 model=self._model, entity=entity, error=repr(error)
             ) from error
 
         if hasattr(entity, "set_id"):
             entity.set_id(model.id)
+
+    @staticmethod
+    def _is_duplicate_exception(error: IntegrityError) -> bool:
+        error_msg = str(error.orig).lower()
+        return any(
+            keyword in error_msg
+            for keyword in ["unique", "duplicate", "already exists"]
+        )

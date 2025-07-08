@@ -88,7 +88,7 @@ class SQLAlchemyDatabase:
             try:
                 yield session
             except Exception as e:
-                logger.exception(
+                logger.error(
                     f"Database session unhandled exception, rolling back, error: {e}",
                 )
                 await session.rollback()
