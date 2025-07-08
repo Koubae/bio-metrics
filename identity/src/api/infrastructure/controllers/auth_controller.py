@@ -24,14 +24,12 @@ class AuthController:
         )
         self.router.add_api_route(path="/login", endpoint=self.login, methods=["POST"])
 
+    @staticmethod
     async def signup(
-        self,
         request: SignUpRequest,
         service: AccountService = Depends(get_account_service),
     ) -> SignUpResponse:
-        # TODO add erro handling
         handler = SignUpHandler(request, service)
-
         response = await handler.handle()
         return response
 

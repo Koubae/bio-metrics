@@ -1,5 +1,11 @@
+import typing as t
+
 from src.core.domain.types import Entity
 from src.core.infrastructure.database.model import DbModel
+
+UNEXPECTED_ERROR_MESSAGE: t.Final[str] = (
+    "Unexpected error occurred, please try again later!"
+)
 
 
 class RepositoryException(Exception):

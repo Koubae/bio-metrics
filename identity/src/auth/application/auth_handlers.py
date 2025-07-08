@@ -6,8 +6,12 @@ from pydantic import BaseModel, Field
 from src.account.application.account_service import AccountService
 from src.account.domain.entities import Account
 from src.auth.domain.entities import Role
-from src.core.domain.exceptions import RepositoryDuplicateRowException
-
+from src.core.domain.exceptions import (
+    RepositoryDuplicateRowException,
+    RepositoryCreateException,
+    RepositoryDatabaseConnectionError,
+    UNEXPECTED_ERROR_MESSAGE,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -46,12 +50,21 @@ class SignUpHandler:
             )
         except RepositoryDuplicateRowException as error:
             logger.warning(
-                f"Duplicate account {self.request.username} : {error}",
+                f"Duplicate account {self.request.username} : {repr(error)}",
                 extra={"extra": {"username": self.request.username}},
             )
             raise HTTPException(
                 status_code=409,
                 detail={"error": f"Account '{self.request.username}' already exists!"},
+            )
+
+        except (RepositoryCreateException, RepositoryDatabaseConnectionError) as error:
+            logger.exception(
+                f"Unexpected exception while creating new account account {self.request.username} : {repr(error)}",
+                extra={"extra": {"username": self.request.username}},
+            )
+            raise HTTPException(
+                status_code=500, detail={"error": UNEXPECTED_ERROR_MESSAGE}
             )
 
         return SignUpResponse(

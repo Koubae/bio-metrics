@@ -14,8 +14,13 @@ class AccountService:
     async def create_account(
         self, username: str, password: str, role: Role | None = None
     ) -> Account:
+        if role is None:
+            role_assigned = Role.USER
+        else:
+            role_assigned = role
+
         password_hash = self.password_hasher.hash_password(password)
-        entity = Account(id=None, username=username, role=role)
+        entity = Account(id=None, username=username, role=role_assigned)
         await self.account_repository.new_account(
             entity=entity, password_hash=password_hash
         )
