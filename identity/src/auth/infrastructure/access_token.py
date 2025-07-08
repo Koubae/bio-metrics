@@ -34,7 +34,7 @@ class JWTAccessTokenAuth(AccessTokenGenerator):
             datetime.now(UTC) + timedelta(hours=settings.app_jwt_expiration_hours)
         ).timestamp()
         payload = {
-            "sub": user_id,
+            "sub": str(user_id),
             "exp": expires_seconds,
             "iat": datetime.now(UTC),
             "iss": "bio-metrics-identity",
@@ -61,19 +61,21 @@ class JWTAccessTokenAuth(AccessTokenGenerator):
                 settings.get_cert_public(),
                 algorithms=[self.JWT_ALGORITHM],
             )
-        except jwt.ExpiredSignatureError:
+        except jwt.ExpiredSignatureError as error:
             logger.debug(
-                "Access-Token expired", extra={"extra": {"access_token": access_token}}
+                "Access-Token expired",
+                extra={"extra": {"access_token": access_token, "error": repr(error)}},
             )
             raise AuthAccessTokenExpired("Token expired")
-        except jwt.InvalidTokenError:
-            logger.debug(
-                "Invalid Access-Token", extra={"extra": {"access_token": access_token}}
+        except jwt.InvalidTokenError as error:
+            logger.info(
+                "Invalid Access-Token",
+                extra={"extra": {"access_token": access_token, "error": repr(error)}},
             )
             raise AuthAccessTokenInvalid("Invalid token")
 
         try:
-            user_id: int = payload["sub"]
+            user_id: str = payload["sub"]
             username: str = payload["username"]
             role: str = payload["role"]
             expires: int = payload["exp"]
@@ -91,7 +93,7 @@ class JWTAccessTokenAuth(AccessTokenGenerator):
             raise AuthAccessTokenInvalid(f"Invalid token payload: {error}") from error
 
         return AccessToken(
-            user_id=user_id,
+            user_id=int(user_id),
             username=username,
             role=Role(role),
             expires=expires,

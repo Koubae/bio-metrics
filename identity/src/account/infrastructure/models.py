@@ -17,7 +17,13 @@ class AccountModel(TimestampedIdModel):
 class AccountMapper(Mapper[Account, AccountModel]):  # pragma: no cover
     @classmethod
     def to_entity(cls, model: AccountModel) -> Account:
-        return Account(id=model.id, username=model.username, role=Role(model.role))
+        return Account(
+            id=model.id,
+            username=model.username,
+            role=Role(model.role),
+            created=model.created,
+            updated=model.updated,
+        )
 
     @classmethod
     def to_entity_with_secret(cls, model: AccountModel) -> AccountWithPassword:

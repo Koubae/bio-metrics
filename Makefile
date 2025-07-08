@@ -15,4 +15,4 @@ db-down-clean-up:
 	@docker compose down -v pgadmin
 
 db-shell:
-	docker exec -it bio-metrics-db psql -U admin
+	docker exec -it bio-metrics-db psql -Uadmin -didentity

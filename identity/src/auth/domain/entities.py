@@ -3,10 +3,10 @@ from dataclasses import dataclass, field
 
 
 class Role(StrEnum):
-    USER = "user"
+    ADMIN = "admin"
     LAB_SCIENTIST = "lab_scientist"
     DOCTOR = "doctor"
-    ADMIN = "admin"
+    USER = "user"
 
 
 @dataclass(frozen=True)

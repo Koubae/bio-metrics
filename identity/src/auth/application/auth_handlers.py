@@ -115,5 +115,7 @@ class LoginHandler:
             )
 
         return LoginResponse(
-            access_token=access_token.access_token, role=Role.USER, expires=1234567890
+            access_token=access_token.access_token,
+            role=access_token.role,
+            expires=access_token.expires,
         )
