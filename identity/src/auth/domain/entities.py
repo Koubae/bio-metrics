@@ -1,4 +1,6 @@
+from enum import StrEnum
 from dataclasses import dataclass, field
+
 
 @dataclass(frozen=True)
 class AccessToken:
@@ -7,3 +9,10 @@ class AccessToken:
     username: str
     role: str
     expires: float
+
+
+class Role(StrEnum):
+    USER = "user"
+    LAB_SCIENTIST = "lab_scientist"
+    DOCTOR = "doctor"
+    ADMIN = "admin"

@@ -41,16 +41,16 @@ init-venv: .update-env-file .install-pip-env .install-env .install-deps
 quality-checks: isort black flake8 mypy
 
 flake8:
-	bash -c "source $$(pipenv --venv)/bin/activate && flake8 --config=.flake8 src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && flake8 --config=.flake8 dependencies/ src/"
 
 black:
-	bash -c "source $$(pipenv --venv)/bin/activate && black --config=pyproject.toml  src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && black --config=pyproject.toml dependencies/ src/"
 
 mypy:
-	bash -c "source $$(pipenv --venv)/bin/activate && mypy src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && mypy dependencies/ && mypy src/"
 
 isort:
-	bash -c "source $$(pipenv --venv)/bin/activate && isort src/"
+	bash -c "source $$(pipenv --venv)/bin/activate && isort dependencies/ src/"
 
 # =========================
 # 		Tests
