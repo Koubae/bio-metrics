@@ -57,3 +57,47 @@ class ListAccountHandler:
     async def handle(self) -> list[Account]:
         accounts = await self.account_service.list_accounts(self.limit, self.offset)
         return accounts
+
+
+class UpdateRoleRequest(BaseModel):
+    username: str = Field(..., min_length=3, max_length=255)
+    role: Role = Field(...)
+
+
+class UpdateRoleHandler:
+    def __init__(
+        self,
+        request: UpdateRoleRequest,
+        account_service: AccountService,
+        access_token: AccessToken,
+    ) -> None:
+        self.request: UpdateRoleRequest = request
+        self.account_service: AccountService = account_service
+        self.access_token: AccessToken = access_token
+
+    async def handle(self) -> Account:
+        username = self.request.username
+        try:
+            account = await self.account_service.get_account(username)
+        except RepositoryEntityNotFound as error:
+            logger.info(
+                f"Update Role failed, Account {username} not found: {repr(error)}",
+                extra={"extra": {"username": username}},
+            )
+            raise HTTPException(
+                status_code=404,
+                detail={"error": f"Account '{username}' does not exists!"},
+            )
+
+        if account.role == self.request.role:
+            logger.info(
+                f"Update Role failed, Role on the same role {self.request.role} for user {account} ",
+                extra={"extra": {"account": account}},
+            )
+            raise HTTPException(
+                status_code=400,
+                detail={"error": f"This user has already role '{self.request.role}'"},
+            )
+
+        account = await self.account_service.update_role(account, self.request.role)
+        return account

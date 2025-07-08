@@ -5,6 +5,8 @@ from src.account.application.account_handlers import (
     GetAccountRequest,
     GetAccountHandler,
     ListAccountHandler,
+    UpdateRoleRequest,
+    UpdateRoleHandler,
 )
 from src.account.application.account_service import AccountService
 from src.account.domain.entities import Account
@@ -59,7 +61,10 @@ class AccountController:
 
     @staticmethod
     async def update_role(
-        service: AccountService = Depends(provide_account_service),
+        request: UpdateRoleRequest,
         access_token: AccessToken = Depends(restrict((Role.ADMIN,))),
-    ) -> None:
-        raise NotImplementedError("TODO")
+        service: AccountService = Depends(provide_account_service),
+    ) -> Account:
+        handler = UpdateRoleHandler(request, service, access_token=access_token)
+        response = await handler.handle()
+        return response

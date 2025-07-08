@@ -42,3 +42,8 @@ class AccountService:
 
     async def list_accounts(self, limit: int = 10, offset: int = 0) -> list[Account]:
         return await self.account_repository.list_accounts(limit, offset)
+
+    async def update_role(self, account: Account, new_role: Role) -> Account:
+        account.role = new_role
+        await self.account_repository.update(account)
+        return account
