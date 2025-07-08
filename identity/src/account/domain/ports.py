@@ -20,3 +20,6 @@ class AccountRepository(AsyncRepository[Account, Model], ABC):
     async def find_by_username_for_login(
         self, username: str
     ) -> AccountWithPassword | None: ...
+
+    @abstractmethod
+    async def list_accounts(self, limit: int, offset: int) -> list[Account]: ...

@@ -39,3 +39,6 @@ class AccountService:
     async def get_account_for_login(self, username: str) -> AccountWithPassword | None:
         account = await self.account_repository.find_by_username_for_login(username)
         return account
+
+    async def list_accounts(self, limit: int = 10, offset: int = 0) -> list[Account]:
+        return await self.account_repository.list_accounts(limit, offset)

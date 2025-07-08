@@ -46,3 +46,14 @@ class GetAccountHandler:
                     detail={"error": "You are not allowed to request this resource!"},
                 )
         return account
+
+
+class ListAccountHandler:
+    def __init__(self, limit: int, offset: int, account_service: AccountService):
+        self.limit: int = limit
+        self.offset: int = offset
+        self.account_service: AccountService = account_service
+
+    async def handle(self) -> list[Account]:
+        accounts = await self.account_service.list_accounts(self.limit, self.offset)
+        return accounts

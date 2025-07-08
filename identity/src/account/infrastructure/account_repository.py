@@ -52,3 +52,12 @@ class AccountRepositoryAdapter(
         if model is None:
             raise RepositoryEntityNotFound(model=self._model, values=(username,))
         return self._mapper.to_entity_with_secret(model)
+
+    async def list_accounts(self, limit: int, offset: int) -> list[Account]:
+        stmt = (
+            select(AccountModel).order_by(AccountModel.id).limit(limit).offset(offset)
+        )
+        result = await self._session.execute(stmt)
+        rows = result.scalars().all()
+        accounts = [self._mapper.to_entity(row) for row in rows]
+        return accounts

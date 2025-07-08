@@ -4,11 +4,16 @@ from dependencies.providers import provide_account_service
 from src.account.application.account_handlers import (
     GetAccountRequest,
     GetAccountHandler,
+    ListAccountHandler,
 )
 from src.account.application.account_service import AccountService
 from src.account.domain.entities import Account
 from src.auth.application.secure import restrict
 from src.auth.domain.entities import AccessToken, Role
+from src.core.infrastructure.web.pagination import (
+    PaginationParams,
+    get_pagination_params,
+)
 from src.settings import Settings
 
 
@@ -42,12 +47,19 @@ class AccountController:
 
     @staticmethod
     async def list(
+        _: AccessToken = Depends(restrict((Role.ADMIN,))),
+        pagination: PaginationParams = Depends(get_pagination_params),
         service: AccountService = Depends(provide_account_service),
-    ) -> None:
-        raise NotImplementedError("TODO")
+    ) -> list[Account]:
+        handler = ListAccountHandler(
+            limit=pagination.limit, offset=pagination.offset, account_service=service
+        )
+        response = await handler.handle()
+        return response
 
     @staticmethod
     async def update_role(
         service: AccountService = Depends(provide_account_service),
+        access_token: AccessToken = Depends(restrict((Role.ADMIN,))),
     ) -> None:
         raise NotImplementedError("TODO")
