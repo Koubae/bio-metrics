@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: bio-metrics-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deploy/postgres/init-database.sql:/docker-entrypoint-initdb.d/init-database.sql
+    networks:
+      - bio_metrics_network
+    environment:
+      POSTGRES_DB: postgres 
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      PGDATA: /var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bio-metrics-pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./deploy/postgres/pgadmin_servers.json:/pgadmin4/servers.json
+    networks:
+      - bio_metrics_network
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+networks:
+  bio_metrics_network:
+    driver: bridge
